@@ -58,6 +58,13 @@ h1, h2 {
   max-width: 400px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.06);
 }
+
+#successMsg {
+  display: none;
+  color: green;
+  margin-top: 10px;
+  font-weight: 500;
+}
 </style>
 
 </head>
@@ -103,9 +110,9 @@ h1, h2 {
 
   <textarea id="message" placeholder="Your message"></textarea><br><br>
 
-<button onclick="addMessage()">Submit</button>
+<button onclick="addMessage()">Send Wishes</button>
 
-  <div id="messages"></div>
+  <p id="successMsg">Message delivered ❤️ Thank you!</p>
 </section>
 
 <section id="upload">
@@ -135,11 +142,11 @@ setInterval(() => {
 }, 1000);
 </script>
 
-<!-- FIREBASE (CLEAN VERSION) -->
+<!-- FIREBASE CLEAN VERSION -->
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDGNec9HVG0vzcR1mYX6vGIj6pA5_gp-vY",
@@ -164,24 +171,14 @@ window.addMessage = async function() {
 
   document.getElementById("name").value = "";
   document.getElementById("message").value = "";
+
+  const success = document.getElementById("successMsg");
+  success.style.display = "block";
+
+  setTimeout(() => {
+    success.style.display = "none";
+  }, 5000);
 };
-
-const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
-
-onSnapshot(q, (snapshot) => {
-  const container = document.getElementById("messages");
-  container.innerHTML = "";
-
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    container.innerHTML += `
-      <div class="card">
-        <strong>${data.name}</strong>
-        <p>${data.message}</p>
-      </div>
-    `;
-  });
-});
 </script>
 
 </body>
