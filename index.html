@@ -22,6 +22,22 @@ body {
   color: #333;
 }
 
+/* 🚫 SITE BLOCKER */
+#siteBlocker {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fffaf5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  text-align: center;
+}
+
 nav {
   display: flex;
   justify-content: center;
@@ -82,6 +98,13 @@ h1, h2 {
 
 <body>
 
+<!-- 🚫 COMING SOON SCREEN -->
+
+<div id="siteBlocker">
+  <h1>Coming Soon 💍</h1>
+  <p>We’re getting things ready for the big day</p>
+</div>
+
 <nav>
   <button onclick="showTab('welcome')">Welcome</button>
   <button onclick="showTab('events')">Events</button>
@@ -103,8 +126,6 @@ h1, h2 {
   <div class="card">Wedding - 26 April</div>
   <div class="card">Reception - 26 April</div>
 </section>
-
-<!-- ✅ UPDATED LOCATION -->
 
 <section id="location">
   <h2>Location</h2>
@@ -143,12 +164,10 @@ h1, h2 {
   <div id="successMsg"></div>
 </section>
 
-<!-- ADMIN -->
-
 <section id="admin">
   <h2>Admin Login</h2>
 
-<input type="password" id="adminPass" placeholder="Enter password"><br><br> <button onclick="loginAdmin()">Enter</button>
+<input type="password" id="adminPass"><br><br> <button onclick="loginAdmin()">Enter</button>
 
   <div id="adminPanel" style="display:none;">
     <h3>Guest Messages</h3>
@@ -157,9 +176,11 @@ h1, h2 {
 </section>
 
 <script>
-function showTab(tabId) {
-  document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-  document.getElementById(tabId).classList.add("active");
+// 🔥 CONTROL SWITCH
+const SITE_OPEN = false; // 👈 change to true when ready
+
+if (SITE_OPEN) {
+  document.getElementById("siteBlocker").style.display = "none";
 }
 
 // Secret admin trigger
@@ -175,6 +196,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+function showTab(tabId) {
+  document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+}
+
 // Countdown
 const weddingDate = new Date("April 25, 2026").getTime();
 setInterval(() => {
@@ -189,7 +215,7 @@ setInterval(() => {
   document.getElementById("countdown").innerHTML = `${d}d ${h}h ${m}m ${s}s`;
 }, 1000);
 
-// Map logic
+// Map
 const venueLat = 12.2402041;
 const venueLng = 75.8546412;
 
@@ -199,14 +225,10 @@ function openMap() {
 
 function getDistance() {
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-      const userLat = position.coords.latitude;
-      const userLng = position.coords.longitude;
-
-      const distance = calculateDistance(userLat, userLng, venueLat, venueLng);
-
+    navigator.geolocation.getCurrentPosition(pos => {
+      const d = calculateDistance(pos.coords.latitude, pos.coords.longitude, venueLat, venueLng);
       document.getElementById("distanceText").innerText =
-        "You are " + distance.toFixed(1) + " km away from venue";
+        "You are " + d.toFixed(1) + " km away from venue";
     });
   }
 }
@@ -215,13 +237,11 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = (lat2-lat1) * Math.PI/180;
   const dLon = (lon2-lon1) * Math.PI/180;
-
   const a =
     Math.sin(dLat/2)**2 +
     Math.cos(lat1*Math.PI/180) *
     Math.cos(lat2*Math.PI/180) *
     Math.sin(dLon/2)**2;
-
   return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
@@ -260,7 +280,6 @@ function showPopup(text) {
   const popup = document.getElementById("successMsg");
   popup.innerText = text;
   popup.style.display = "block";
-
   setTimeout(() => popup.style.display = "none", 5000);
 }
 
@@ -279,7 +298,6 @@ function loadAdminMessages() {
     .onSnapshot(snapshot => {
       const container = document.getElementById("adminMessages");
       container.innerHTML = "";
-
       snapshot.forEach(doc => {
         const data = doc.data();
         container.innerHTML += `
