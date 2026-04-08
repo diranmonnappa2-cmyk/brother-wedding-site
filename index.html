@@ -153,31 +153,35 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// attach click AFTER load
-document.getElementById("submitBtn").addEventListener("click", async () => {
-  const name = document.getElementById("name").value;
-  const message = document.getElementById("message").value;
+// ✅ FIX: wait for DOM
+window.addEventListener("DOMContentLoaded", () => {
+  const button = document.getElementById("submitBtn");
 
-  if (!name || !message) {
-    alert("Fill all fields");
-    return;
-  }
+  button.addEventListener("click", async () => {
+    const name = document.getElementById("name").value;
+    const message = document.getElementById("message").value;
 
-  await addDoc(collection(db, "messages"), {
-    name,
-    message,
-    timestamp: new Date()
+    if (!name || !message) {
+      alert("Fill all fields");
+      return;
+    }
+
+    await addDoc(collection(db, "messages"), {
+      name,
+      message,
+      timestamp: new Date()
+    });
+
+    document.getElementById("name").value = "";
+    document.getElementById("message").value = "";
+
+    const success = document.getElementById("successMsg");
+    success.style.display = "block";
+
+    setTimeout(() => {
+      success.style.display = "none";
+    }, 5000);
   });
-
-  document.getElementById("name").value = "";
-  document.getElementById("message").value = "";
-
-  const success = document.getElementById("successMsg");
-  success.style.display = "block";
-
-  setTimeout(() => {
-    success.style.display = "none";
-  }, 5000);
 });
 </script>
 
