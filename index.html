@@ -67,7 +67,7 @@ h1, h2 {
 #successMsg {
   display: none;
   position: fixed;
-  bottom: 30px;   /* 👈 moved to bottom */
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   background: #b48a5a;
@@ -88,11 +88,10 @@ h1, h2 {
   <button onclick="showTab('location')">Location</button>
   <button onclick="showTab('gallery')">Gallery</button>
   <button onclick="showTab('guestbook')">Guestbook</button>
-  <button onclick="showTab('admin')">Admin</button>
 </nav>
 
 <section id="welcome" class="active">
-  <h1>Brother Name & Partner Name</h1>
+  <h1 id="secretTrigger">Brother Name & Partner Name</h1>
   <h2>25 - 26 April 2026</h2>
   <div id="countdown"></div>
 </section>
@@ -145,6 +144,25 @@ function showTab(tabId) {
   document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
   document.getElementById(tabId).classList.add("active");
 }
+
+// 🔐 SECRET TAP (5 clicks)
+let tapCount = 0;
+document.addEventListener("DOMContentLoaded", () => {
+  const trigger = document.getElementById("secretTrigger");
+
+  trigger.addEventListener("click", () => {
+    tapCount++;
+
+    if (tapCount === 5) {
+      showTab("admin");
+      tapCount = 0;
+    }
+
+    setTimeout(() => {
+      tapCount = 0;
+    }, 2000);
+  });
+});
 
 const countdown = document.getElementById("countdown");
 const weddingDate = new Date("April 25, 2026").getTime();
@@ -206,7 +224,7 @@ function showPopup(text) {
 }
 
 // ===== ADMIN =====
-const ADMIN_PASSWORD = "1234"; // 🔐 CHANGE THIS
+const ADMIN_PASSWORD = "1234"; // change this
 
 function loginAdmin() {
   const pass = document.getElementById("adminPass").value;
