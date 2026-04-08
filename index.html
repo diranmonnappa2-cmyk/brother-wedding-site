@@ -104,9 +104,26 @@ h1, h2 {
   <div class="card">Reception - 26 April</div>
 </section>
 
+<!-- ✅ UPDATED LOCATION -->
+
 <section id="location">
   <h2>Location</h2>
-  <p>Venue details here</p>
+
+  <p>Kodava Samaja, Ammathi</p><br>
+
+  <iframe 
+    src="https://www.google.com/maps?q=12.2402041,75.8546412&output=embed"
+    width="90%" 
+    height="300" 
+    style="border:0; border-radius:12px;" 
+    loading="lazy">
+  </iframe>
+
+<br><br>
+
+<button onclick="openMap()">Open in Google Maps 📍</button>
+
+  <p id="distanceText" style="margin-top:10px;"></p>
 </section>
 
 <section id="gallery">
@@ -126,7 +143,7 @@ h1, h2 {
   <div id="successMsg"></div>
 </section>
 
-<!-- 🔐 ADMIN SECTION -->
+<!-- ADMIN -->
 
 <section id="admin">
   <h2>Admin Login</h2>
@@ -145,28 +162,21 @@ function showTab(tabId) {
   document.getElementById(tabId).classList.add("active");
 }
 
-// 🔐 SECRET TAP (5 clicks)
+// Secret admin trigger
 let tapCount = 0;
 document.addEventListener("DOMContentLoaded", () => {
-  const trigger = document.getElementById("secretTrigger");
-
-  trigger.addEventListener("click", () => {
+  document.getElementById("secretTrigger").addEventListener("click", () => {
     tapCount++;
-
     if (tapCount === 5) {
       showTab("admin");
       tapCount = 0;
     }
-
-    setTimeout(() => {
-      tapCount = 0;
-    }, 2000);
+    setTimeout(() => tapCount = 0, 2000);
   });
 });
 
-const countdown = document.getElementById("countdown");
+// Countdown
 const weddingDate = new Date("April 25, 2026").getTime();
-
 setInterval(() => {
   const now = new Date().getTime();
   const gap = weddingDate - now;
@@ -176,8 +186,46 @@ setInterval(() => {
   const m = Math.floor((gap / (1000*60)) % 60);
   const s = Math.floor((gap / 1000) % 60);
 
-  countdown.innerHTML = `${d}d ${h}h ${m}m ${s}s`;
+  document.getElementById("countdown").innerHTML = `${d}d ${h}h ${m}m ${s}s`;
 }, 1000);
+
+// Map logic
+const venueLat = 12.2402041;
+const venueLng = 75.8546412;
+
+function openMap() {
+  window.open(`https://www.google.com/maps?q=${venueLat},${venueLng}`, "_blank");
+}
+
+function getDistance() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+      const userLat = position.coords.latitude;
+      const userLng = position.coords.longitude;
+
+      const distance = calculateDistance(userLat, userLng, venueLat, venueLng);
+
+      document.getElementById("distanceText").innerText =
+        "You are " + distance.toFixed(1) + " km away from venue";
+    });
+  }
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2-lat1) * Math.PI/180;
+  const dLon = (lon2-lon1) * Math.PI/180;
+
+  const a =
+    Math.sin(dLat/2)**2 +
+    Math.cos(lat1*Math.PI/180) *
+    Math.cos(lat2*Math.PI/180) *
+    Math.sin(dLon/2)**2;
+
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+setTimeout(getDistance, 2000);
 </script>
 
 <script>
@@ -190,15 +238,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ===== GUEST MESSAGE =====
 function addMessage() {
   const name = document.getElementById("name").value;
   const message = document.getElementById("message").value;
 
-  if (!name || !message) {
-    alert("Fill all fields");
-    return;
-  }
+  if (!name || !message) return alert("Fill all fields");
 
   db.collection("messages").add({
     name,
@@ -212,29 +256,21 @@ function addMessage() {
   showPopup("Message delivered ❤️ Thank you!");
 }
 
-// ===== POPUP =====
 function showPopup(text) {
   const popup = document.getElementById("successMsg");
   popup.innerText = text;
   popup.style.display = "block";
 
-  setTimeout(() => {
-    popup.style.display = "none";
-  }, 5000);
+  setTimeout(() => popup.style.display = "none", 5000);
 }
 
-// ===== ADMIN =====
-const ADMIN_PASSWORD = "1234"; // change this
+const ADMIN_PASSWORD = "1234";
 
 function loginAdmin() {
-  const pass = document.getElementById("adminPass").value;
-
-  if (pass === ADMIN_PASSWORD) {
+  if (document.getElementById("adminPass").value === ADMIN_PASSWORD) {
     document.getElementById("adminPanel").style.display = "block";
     loadAdminMessages();
-  } else {
-    alert("Wrong password");
-  }
+  } else alert("Wrong password");
 }
 
 function loadAdminMessages() {
