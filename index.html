@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #fffaf5;
+      color: #333;
+      scroll-behavior: smooth;
+    }
+    section {
+      padding: 60px 20px;
+      text-align: center;
+    }
+    h1, h2 {
+      font-family: 'Playfair Display', serif;
+      color: #b48a5a;
+    }
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .countdown {
+      font-size: 20px;
+      margin-top: 20px;
+    }
+    .card {
+      background: white;
+      margin: 10px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    input, textarea {
+      width: 90%;
+      padding: 10px;
+      margin: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #b48a5a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<section class="hero">
+  <h1>Brother Name & Partner Name</h1>
+  <h2>25 - 26 April 2026</h2>
+  <div class="countdown" id="countdown"></div>
+</section>
+
+<section>
+  <h2>Events</h2>
+  <div class="card">Mehendi - 25 April</div>
+  <div class="card">Sangeet - 25 April</div>
+  <div class="card">Wedding - 26 April</div>
+  <div class="card">Reception - 26 April</div>
+</section>
+
+<section>
+  <h2>Location</h2>
+  <p>Venue details here</p>
+</section>
+
+<section>
+  <h2>Gallery</h2>
+  <p>Photos coming soon...</p>
+</section>
+
+<section>
+  <h2>Guestbook</h2>
+  <input placeholder="Your name">
+  <textarea placeholder="Your message"></textarea>
+  <br>
+  <button>Submit</button>
+</section>
+
+<section>
+  <h2>Upload Photos</h2>
+  <input type="file">
+</section>
+
+<script>
+const countdown = document.getElementById("countdown");
+const weddingDate = new Date("April 25, 2026 00:00:00").getTime();
+
+setInterval(() => {
+  const now = new Date().getTime();
+  const gap = weddingDate - now;
+
+  const days = Math.floor(gap / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((gap % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((gap % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((gap % (1000 * 60)) / 1000);
+
+  countdown.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}, 1000);
+</script>
+
+</body>
+</html>
