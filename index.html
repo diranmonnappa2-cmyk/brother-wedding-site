@@ -56,14 +56,12 @@ h1, h2 {
   padding: 25px;
   border-radius: 14px;
   max-width: 400px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
 }
 
 #successMsg {
   display: none;
   color: green;
   margin-top: 10px;
-  font-weight: 500;
 }
 </style>
 
@@ -110,7 +108,7 @@ h1, h2 {
 
   <textarea id="message" placeholder="Your message"></textarea><br><br>
 
-<button onclick="addMessage()">Send Wishes</button>
+<button id="submitBtn">Send Wishes</button>
 
   <p id="successMsg">Message delivered ❤️ Thank you!</p>
 </section>
@@ -142,8 +140,6 @@ setInterval(() => {
 }, 1000);
 </script>
 
-<!-- FIREBASE CLEAN VERSION -->
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -157,11 +153,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-window.addMessage = async function() {
+// attach click AFTER load
+document.getElementById("submitBtn").addEventListener("click", async () => {
   const name = document.getElementById("name").value;
   const message = document.getElementById("message").value;
 
-  if (!name || !message) return alert("Fill all fields");
+  if (!name || !message) {
+    alert("Fill all fields");
+    return;
+  }
 
   await addDoc(collection(db, "messages"), {
     name,
@@ -178,7 +178,7 @@ window.addMessage = async function() {
   setTimeout(() => {
     success.style.display = "none";
   }, 5000);
-};
+});
 </script>
 
 </body>
