@@ -16,7 +16,6 @@ body {
   color: #333;
 }
 
-/* NAV */
 nav {
   display: flex;
   justify-content: center;
@@ -25,7 +24,6 @@ nav {
   background: rgba(255,255,255,0.8);
   position: sticky;
   top: 0;
-  backdrop-filter: blur(10px);
 }
 
 nav button {
@@ -37,7 +35,6 @@ nav button {
   font-weight: 600;
 }
 
-/* SECTIONS */
 section {
   display: none;
   padding: 80px 20px;
@@ -97,16 +94,16 @@ h1, h2 {
 
 <section id="gallery">
   <h2>Gallery</h2>
-  <p>Coming soon...</p>
 </section>
 
 <section id="guestbook">
   <h2>Guestbook</h2>
 
-  <input id="name" placeholder="Your name"><br><br>
+<input id="name" placeholder="Your name"><br><br>
+
   <textarea id="message" placeholder="Your message"></textarea><br><br>
 
-  <button onclick="addMessage()">Submit</button>
+<button onclick="addMessage()">Submit</button>
 
   <div id="messages"></div>
 </section>
@@ -115,15 +112,7 @@ h1, h2 {
   <h2>Upload Photos</h2>
   <input type="file">
 </section>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDGNec9HVG0vzcR1mYX6vGIj6pA5_gp-vY",
-  authDomain: "wedding-site-c711f.firebaseapp.com",
-  projectId: "wedding-site-c711f",
-};
 
-
-</script>
 <script>
 function showTab(tabId) {
   document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
@@ -144,57 +133,23 @@ setInterval(() => {
 
   countdown.innerHTML = `${d}d ${h}h ${m}m ${s}s`;
 }, 1000);
-  function addMessage() {
-  const name = document.getElementById("name").value;
-  const message = document.getElementById("message").value;
-
-  if (!name || !message) return alert("Fill all fields");
-
-  db.collection("messages").add({
-    name,
-    message,
-    timestamp: new Date()
-  });
-
-  document.getElementById("name").value = "";
-  document.getElementById("message").value = "";
-}
-
-function loadMessages() {
-  db.collection("messages")
-    .orderBy("timestamp", "desc")
-    .onSnapshot(snapshot => {
-      const container = document.getElementById("messages");
-      container.innerHTML = "";
-
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        container.innerHTML += `
-          <div class="card">
-            <strong>${data.name}</strong>
-            <p>${data.message}</p>
-          </div>
-        `;
-      });
-    });
-}
-
-loadMessages();
 </script>
+
+<!-- FIREBASE (CLEAN VERSION) -->
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "PASTE_YOURS",
-  authDomain: "PASTE_YOURS",
-  projectId: "PASTE_YOURS",
+  apiKey: "AIzaSyDGNec9HVG0vzcR1mYX6vGIj6pA5_gp-vY",
+  authDomain: "wedding-site-c711f.firebaseapp.com",
+  projectId: "wedding-site-c711f",
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ADD MESSAGE
 window.addMessage = async function() {
   const name = document.getElementById("name").value;
   const message = document.getElementById("message").value;
@@ -211,27 +166,23 @@ window.addMessage = async function() {
   document.getElementById("message").value = "";
 };
 
-// LOAD MESSAGES
-function loadMessages() {
-  const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
+const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
 
-  onSnapshot(q, (snapshot) => {
-    const container = document.getElementById("messages");
-    container.innerHTML = "";
+onSnapshot(q, (snapshot) => {
+  const container = document.getElementById("messages");
+  container.innerHTML = "";
 
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      container.innerHTML += `
-        <div class="card">
-          <strong>${data.name}</strong>
-          <p>${data.message}</p>
-        </div>
-      `;
-    });
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    container.innerHTML += `
+      <div class="card">
+        <strong>${data.name}</strong>
+        <p>${data.message}</p>
+      </div>
+    `;
   });
-}
-
-loadMessages();
+});
 </script>
+
 </body>
 </html>
