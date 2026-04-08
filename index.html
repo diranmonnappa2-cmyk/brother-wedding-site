@@ -87,6 +87,7 @@ h1, h2 {
   <button onclick="showTab('location')">Location</button>
   <button onclick="showTab('gallery')">Gallery</button>
   <button onclick="showTab('guestbook')">Guestbook</button>
+  <button onclick="showTab('admin')">Admin</button>
 </nav>
 
 <section id="welcome" class="active">
@@ -125,6 +126,19 @@ h1, h2 {
   <div id="successMsg"></div>
 </section>
 
+<!-- 🔐 ADMIN SECTION -->
+
+<section id="admin">
+  <h2>Admin Login</h2>
+
+<input type="password" id="adminPass" placeholder="Enter password"><br><br> <button onclick="loginAdmin()">Enter</button>
+
+  <div id="adminPanel" style="display:none;">
+    <h3>Guest Messages</h3>
+    <div id="adminMessages"></div>
+  </div>
+</section>
+
 <script>
 function showTab(tabId) {
   document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
@@ -157,6 +171,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// ===== GUEST MESSAGE =====
 function addMessage() {
   const name = document.getElementById("name").value;
   const message = document.getElementById("message").value;
@@ -178,6 +193,7 @@ function addMessage() {
   showPopup("Message delivered ❤️ Thank you!");
 }
 
+// ===== POPUP =====
 function showPopup(text) {
   const popup = document.getElementById("successMsg");
   popup.innerText = text;
@@ -186,6 +202,39 @@ function showPopup(text) {
   setTimeout(() => {
     popup.style.display = "none";
   }, 5000);
+}
+
+// ===== ADMIN =====
+const ADMIN_PASSWORD = "1234"; // 🔐 CHANGE THIS
+
+function loginAdmin() {
+  const pass = document.getElementById("adminPass").value;
+
+  if (pass === ADMIN_PASSWORD) {
+    document.getElementById("adminPanel").style.display = "block";
+    loadAdminMessages();
+  } else {
+    alert("Wrong password");
+  }
+}
+
+function loadAdminMessages() {
+  db.collection("messages")
+    .orderBy("timestamp", "desc")
+    .onSnapshot(snapshot => {
+      const container = document.getElementById("adminMessages");
+      container.innerHTML = "";
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        container.innerHTML += `
+          <div class="card">
+            <strong>${data.name}</strong>
+            <p>${data.message}</p>
+          </div>
+        `;
+      });
+    });
 }
 </script>
 
