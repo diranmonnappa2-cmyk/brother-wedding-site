@@ -56,12 +56,7 @@ h1, h2 {
   padding: 25px;
   border-radius: 14px;
   max-width: 400px;
-}
-
-#successMsg {
-  display: none;
-  color: green;
-  margin-top: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
 }
 </style>
 
@@ -108,9 +103,9 @@ h1, h2 {
 
   <textarea id="message" placeholder="Your message"></textarea><br><br>
 
-<button id="submitBtn">Send Wishes</button>
+<button onclick="addMessage()">Submit</button>
 
-  <p id="successMsg">Message delivered ❤️ Thank you!</p>
+  <div id="messages"></div>
 </section>
 
 <section id="upload">
@@ -140,9 +135,11 @@ setInterval(() => {
 }, 1000);
 </script>
 
+<!-- FIREBASE (CLEAN VERSION) -->
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDGNec9HVG0vzcR1mYX6vGIj6pA5_gp-vY",
@@ -153,34 +150,36 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ✅ FIX: wait for DOM
-window.addEventListener("DOMContentLoaded", () => {
-  const button = document.getElementById("submitBtn");
+window.addMessage = async function() {
+  const name = document.getElementById("name").value;
+  const message = document.getElementById("message").value;
 
-  button.addEventListener("click", async () => {
-    const name = document.getElementById("name").value;
-    const message = document.getElementById("message").value;
+  if (!name || !message) return alert("Fill all fields");
 
-    if (!name || !message) {
-      alert("Fill all fields");
-      return;
-    }
+  await addDoc(collection(db, "messages"), {
+    name,
+    message,
+    timestamp: new Date()
+  });
 
-    await addDoc(collection(db, "messages"), {
-      name,
-      message,
-      timestamp: new Date()
-    });
+  document.getElementById("name").value = "";
+  document.getElementById("message").value = "";
+};
 
-    document.getElementById("name").value = "";
-    document.getElementById("message").value = "";
+const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
 
-    const success = document.getElementById("successMsg");
-    success.style.display = "block";
+onSnapshot(q, (snapshot) => {
+  const container = document.getElementById("messages");
+  container.innerHTML = "";
 
-    setTimeout(() => {
-      success.style.display = "none";
-    }, 5000);
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    container.innerHTML += `
+      <div class="card">
+        <strong>${data.name}</strong>
+        <p>${data.message}</p>
+      </div>
+    `;
   });
 });
 </script>
