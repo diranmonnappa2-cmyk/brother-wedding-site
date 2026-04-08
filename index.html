@@ -2,71 +2,91 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wedding</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter&display=swap" rel="stylesheet">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: #fffaf5;
-      color: #333;
-      scroll-behavior: smooth;
-    }
-    section {
-      padding: 60px 20px;
-      text-align: center;
-    }
-    h1, h2 {
-      font-family: 'Playfair Display', serif;
-      color: #b48a5a;
-    }
-    .hero {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .countdown {
-      font-size: 20px;
-      margin-top: 20px;
-    }
-    .card {
-      background: white;
-      margin: 10px;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-    input, textarea {
-      width: 90%;
-      padding: 10px;
-      margin: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      background: #b48a5a;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+<style>
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #fffaf5;
+  color: #333;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 15px;
+  background: white;
+  position: sticky;
+  top: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+nav button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #b48a5a;
+  font-weight: bold;
+}
+
+section {
+  display: none;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.active {
+  display: block;
+}
+
+h1, h2 {
+  font-family: 'Playfair Display', serif;
+  color: #b48a5a;
+}
+
+.card {
+  background: white;
+  margin: 10px;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+button.primary {
+  background: #b48a5a;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+}
+
+</style>
 
 </head>
 
 <body>
 
-<section class="hero">
+<nav>
+  <button onclick="showTab('welcome')">Welcome</button>
+  <button onclick="showTab('events')">Events</button>
+  <button onclick="showTab('location')">Location</button>
+  <button onclick="showTab('gallery')">Gallery</button>
+  <button onclick="showTab('guestbook')">Guestbook</button>
+  <button onclick="showTab('upload')">Upload</button>
+</nav>
+
+<section id="welcome" class="active">
   <h1>Brother Name & Partner Name</h1>
   <h2>25 - 26 April 2026</h2>
-  <div class="countdown" id="countdown"></div>
+  <div id="countdown"></div>
 </section>
 
-<section>
+<section id="events">
   <h2>Events</h2>
   <div class="card">Mehendi - 25 April</div>
   <div class="card">Sangeet - 25 April</div>
@@ -74,43 +94,47 @@
   <div class="card">Reception - 26 April</div>
 </section>
 
-<section>
+<section id="location">
   <h2>Location</h2>
   <p>Venue details here</p>
 </section>
 
-<section>
+<section id="gallery">
   <h2>Gallery</h2>
-  <p>Photos coming soon...</p>
+  <p>Coming soon...</p>
 </section>
 
-<section>
+<section id="guestbook">
   <h2>Guestbook</h2>
-  <input placeholder="Your name">
-  <textarea placeholder="Your message"></textarea>
-  <br>
-  <button>Submit</button>
+  <input placeholder="Your name"><br><br>
+  <textarea placeholder="Your message"></textarea><br><br>
+  <button class="primary">Submit</button>
 </section>
 
-<section>
+<section id="upload">
   <h2>Upload Photos</h2>
   <input type="file">
 </section>
 
 <script>
+function showTab(tabId) {
+  document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+}
+
 const countdown = document.getElementById("countdown");
-const weddingDate = new Date("April 25, 2026 00:00:00").getTime();
+const weddingDate = new Date("April 25, 2026").getTime();
 
 setInterval(() => {
   const now = new Date().getTime();
   const gap = weddingDate - now;
 
-  const days = Math.floor(gap / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((gap % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((gap % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((gap % (1000 * 60)) / 1000);
+  const d = Math.floor(gap / (1000*60*60*24));
+  const h = Math.floor((gap / (1000*60*60)) % 24);
+  const m = Math.floor((gap / (1000*60)) % 60);
+  const s = Math.floor((gap / 1000) % 60);
 
-  countdown.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  countdown.innerHTML = `${d}d ${h}h ${m}m ${s}s`;
 }, 1000);
 </script>
 
